@@ -1,0 +1,12 @@
+USER_SECRET_FILE = "cleantootsuser.secret"
+APP_SECRET_FILE = "cleantootsapp.secret"
+API_BASE_URL = "https://fosstodon.org"
+PROTECTED_TOOTS = [
+    103361883565013391,
+    103362008817616000,
+    103363106195441418,
+]
+BOOST_LIMIT = 5
+FAVORITE_LIMIT = 5
+DAYS_COUNT = 30
+TIMEZONE = "Europe/Paris"
