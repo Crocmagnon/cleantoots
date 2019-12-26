@@ -1,4 +1,5 @@
 # Cleantoots
+The idea of cleantoots is highly inspired by [magnusnissel/cleantweets](https://github.com/magnusnissel/cleantweets).
 
 ## Initial config
 
