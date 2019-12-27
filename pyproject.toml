@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "cleantoots"
-version = "0.1.2"
-description = ""
+version = "0.1.4"
+description = "Cleanup your toot history."
+license = "GPL-3.0-or-later"
 authors = ["Gabriel Augendre <gabriel@augendre.info>"]
+readme = "README.md"
+homepage = "https://github.com/Crocmagnon/cleantoots/tree/master"
+keywords = ["mastodon", "toot"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -13,6 +17,9 @@ pendulum = "^2.0.5"
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 black = "^19.10b0"
+
+[tool.poetry.scripts]
+cleantoots = 'cleantoots.main:cli'
 
 [build-system]
 requires = ["poetry>=0.12"]
