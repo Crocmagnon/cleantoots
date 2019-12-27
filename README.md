@@ -69,8 +69,7 @@ cleantoots clean --delete  # Delete without prompt.
 ```
 
 ## Tested environments
-Cleantoots has been only tested on:
-
-* macOS Catalina with Python 3.8.0.
-
-If you use it in an other environment, please tell us so we can update this list.
+Cleantoots test suite runs on latest versions of macOS, Windows and Ubuntu
+as GitHub Actions understands it. See
+(the docs)[https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idruns-on]
+for more information on what "latest" means".
