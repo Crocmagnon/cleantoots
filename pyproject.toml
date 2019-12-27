@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cleantoots"
-version = "0.1.6"
+version = "0.1.7"
 description = "Cleanup your toot history."
 license = "GPL-3.0-or-later"
 authors = ["Gabriel Augendre <gabriel@augendre.info>"]
