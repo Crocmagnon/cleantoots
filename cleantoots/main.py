@@ -27,12 +27,10 @@ def cli(ctx):
     """
     Provide an easy interface for deleting old toots.
 
+    \b
     Steps, in order:
-
     1. run `setup-config`
-
     2. run `login`
-
     3. run `clean --delete`
     """
     ctx.obj = configparser.ConfigParser()
