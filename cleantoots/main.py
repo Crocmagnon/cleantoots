@@ -1,29 +1,50 @@
 import configparser
 import os
 import pathlib
-import subprocess
-import webbrowser
+import sys
 
 import click
 import pendulum
+from click import Abort
 from mastodon import Mastodon
 
-
-def config_file(filename):
-    return os.path.join(CONFIG_DIR, filename)
-
-
 HOME = pathlib.Path.home()
-CONFIG_DIR = click.get_app_dir("cleantoots")
-CONFIG_FILE = config_file("config.ini")
+DEFAULT_CONFIG_DIR = click.get_app_dir("cleantoots")
+DEFAULT_CONFIG_FILENAME = "config.ini"
 EDITOR = os.getenv("EDITOR", "vim")
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
+class CleanTootsConfig(configparser.ConfigParser):
+    def __init__(self, config_dir, config_file_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dir = config_dir
+        self.main_file = os.path.join(config_dir, config_file_name)
+        self.read(self.main_file)
+
+    def file(self, filename):
+        return os.path.join(self.dir, filename)
+
+
 @click.group(context_settings=CONTEXT_SETTINGS)
+@click.option(
+    "-d",
+    "--config-dir",
+    help="Custom configuration directory.",
+    default=DEFAULT_CONFIG_DIR,
+    show_default=True,
+)
+@click.option(
+    "-c",
+    "--config-file",
+    help="Custom configuration file name. "
+    "Must only contain the filename, not the whole path.",
+    default=DEFAULT_CONFIG_FILENAME,
+    show_default=True,
+)
 @click.pass_context
-def cli(ctx):
+def cli(ctx, config_dir, config_file):
     """
     Provide an easy interface for deleting old toots.
 
@@ -33,34 +54,36 @@ def cli(ctx):
     2. run `login`
     3. run `clean --delete`
     """
-    ctx.obj = configparser.ConfigParser()
-    ctx.obj.read(CONFIG_FILE)
+    ctx.obj = CleanTootsConfig(config_dir, config_file)
 
 
 @cli.command()
-def setup_config():
+@click.pass_obj
+def setup_config(config):
     """Initial setup for configuration directories and files."""
-    os.makedirs(CONFIG_DIR, exist_ok=True)
-    if os.path.isfile(CONFIG_FILE):
-        click.secho("{} found. Not touching anything.".format(CONFIG_FILE), fg="red")
-        return
+    os.makedirs(config.dir, exist_ok=True)
+    if os.path.isfile(config.main_file):
+        click.secho(
+            "{} found. Not touching anything.".format(config.main_file), fg="red"
+        )
+        raise Abort()
 
-    config = configparser.ConfigParser()
-    config["DEFAULT"] = {
+    default_config = configparser.ConfigParser()
+    default_config["DEFAULT"] = {
         "boost_limit": 5,
         "favorite_limit": 5,
         "days_count": 30,
         "timezone": "Europe/Paris",
     }
-    config["Mastodon.social"] = {
+    default_config["Mastodon.social"] = {
         "api_base_url": "https://mastodon.social",
         "app_secret_file": "mastodon_social_app.secret",
         "user_secret_file": "mastodon_social_user.secret",
         "protected_toots": "1234\n5678",
     }
-    with open(CONFIG_FILE, "w") as _file:
-        config.write(_file)
-        click.secho("{} written.".format(CONFIG_FILE), fg="green")
+    with open(config.main_file, "w") as _file:
+        default_config.write(_file)
+        click.secho("{} written.".format(config.main_file), fg="green")
     click.echo()
     click.secho("Next steps", bold=True)
     click.echo(
@@ -68,10 +91,11 @@ def setup_config():
     )
     click.echo("* The base URL of your Mastodon instance")
     click.echo("* The toots you want to protect")
-    click.echo()
-    click.secho("We're going to open the file for you now.")
-    click.pause()
-    subprocess.run([EDITOR, CONFIG_FILE])
+    if sys.stdout.isatty() and sys.stdin.isatty():
+        click.echo()
+        click.secho("We're going to open the file for you now.")
+        click.pause()
+        click.edit(filename=config.main_file)
 
 
 @cli.command()
@@ -95,20 +119,27 @@ def login(config):
         Mastodon.create_app(
             "cleantoots",
             api_base_url=section.get("api_base_url"),
-            to_file=config_file(section.get("app_secret_file")),
+            to_file=config.file(section.get("app_secret_file")),
         )
-        mastodon = Mastodon(client_id=config_file(section.get("app_secret_file")))
-        click.echo(
-            "We will now open a browser for each account set in the config file."
-        )
-        click.echo(
-            "You'll need to authenticate and then copy the code provided in the web "
-            "page back into this terminal, upon prompt."
-        )
-        click.pause()
-        webbrowser.open(mastodon.auth_request_url())
+        mastodon = Mastodon(client_id=config.file(section.get("app_secret_file")))
+        if sys.stdout.isatty() and sys.stdin.isatty():
+            click.echo(
+                "We will now open a browser for each account set in the config file."
+            )
+            click.echo(
+                "You'll need to authenticate and then copy the code provided in the web "
+                "page back into this terminal, upon prompt."
+            )
+            click.pause()
+            click.launch(mastodon.auth_request_url())
+        else:
+            click.echo(
+                "Go to {}, authenticate and enter the code below.".format(
+                    mastodon.auth_request_url()
+                )
+            )
         code = click.prompt("Enter code for {}".format(section.get("api_base_url")))
-        mastodon.log_in(code=code, to_file=config_file(section.get("user_secret_file")))
+        mastodon.log_in(code=code, to_file=config.file(section.get("user_secret_file")))
 
 
 @cli.command()
@@ -127,7 +158,7 @@ def clean(delete, config):
     """
     for section in config.sections():
         section = config[section]
-        user_secret_file = config_file(section.get("user_secret_file"))
+        user_secret_file = config.file(section.get("user_secret_file"))
         mastodon = Mastodon(access_token=user_secret_file)
         user = mastodon.me()
         page = mastodon.account_statuses(user["id"])
