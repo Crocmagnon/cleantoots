@@ -18,8 +18,10 @@ CONFIG_DIR = click.get_app_dir("cleantoots")
 CONFIG_FILE = config_file("config.ini")
 EDITOR = os.getenv("EDITOR", "vim")
 
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
-@click.group()
+
+@click.group(context_settings=CONTEXT_SETTINGS)
 @click.pass_context
 def cli(ctx):
     """
