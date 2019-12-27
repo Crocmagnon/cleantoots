@@ -1,5 +1,4 @@
 import configparser
-import functools
 import os
 import pathlib
 import subprocess
@@ -21,7 +20,8 @@ EDITOR = os.getenv("EDITOR", "vim")
 
 
 @click.group()
-def cli():
+@click.pass_context
+def cli(ctx):
     """
     Provide an easy interface for deleting old toots.
 
@@ -33,16 +33,8 @@ def cli():
 
     3. run `clean --delete`
     """
-    pass
-
-
-def load_config(function):
-    config = configparser.ConfigParser()
-    config.read(CONFIG_FILE)
-    func = functools.partial(function, config=config)
-    func.__name__ = function.__name__
-    func.__doc__ = function.__doc__
-    return func
+    ctx.obj = configparser.ConfigParser()
+    ctx.obj.read(CONFIG_FILE)
 
 
 @cli.command()
@@ -83,7 +75,7 @@ def setup_config():
 
 
 @cli.command()
-@load_config
+@click.pass_obj
 def config(config):
     """Display parsed config."""
     for section_name in config.sections():
@@ -95,7 +87,7 @@ def config(config):
 
 
 @cli.command()
-@load_config
+@click.pass_obj
 def login(config):
     """Fetch credentials for each app described in config file."""
     for section in config.sections():
@@ -126,7 +118,7 @@ def login(config):
     "Without this flags, toots will only be listed.",
     is_flag=True,
 )
-@load_config
+@click.pass_obj
 def clean(delete, config):
     """
     Delete Toots based on rules in config file.
