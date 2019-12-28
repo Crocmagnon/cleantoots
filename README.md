@@ -59,6 +59,7 @@ favorite_limit = 30
 days_count = 7
 ```
 
+
 ## Run
 
 See `cleantoots config` for the current config.
