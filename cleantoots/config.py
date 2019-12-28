@@ -92,6 +92,11 @@ def edit(config):
 @click.pass_obj
 def login(config):
     """Fetch credentials for each app described in config file."""
+    if not config.sections():
+        click.secho("The config file doesn't seem to have any section.", fg="yellow")
+        command = click.style("cleantoots config setup", bold=True)
+        click.secho("You should set it up first. Use: {}".format(command))
+        return
     for section in config.sections():
         section = config[section]
         Mastodon.create_app(
