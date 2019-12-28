@@ -89,6 +89,18 @@ cleantoots config login --only-missing  # Store credentials for your newly creat
 cleantoots clean --delete
 ```
 
+## Remove an account
+```bash
+# This deletes stored credentials for accounts described in the main config file.
+cleantoots config clear-credentials
+
+# You can then edit the config and remove some accounts:
+cleantoots config edit
+
+# Then login again for remaining accounts.
+cleantoots config login
+```
+
 ## Tested environments
 Cleantoots test suite runs on Python 3.6, 3.7 and 3.8
 on latest versions of macOS, Windows and Ubuntu as GitHub Actions understands it.
