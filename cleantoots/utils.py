@@ -17,16 +17,17 @@ def _config_has_sections(config):
     return True
 
 
-def _open_url(url):
+def _open_url(url, echo):
     if _is_tty():
-        click.echo(
-            "We will now open a browser for each account set in the config file."
-        )
-        click.echo(
-            "You'll need to authenticate and then copy the code provided in the web "
-            "page back into this terminal, upon prompt."
-        )
-        click.pause()
+        if echo:
+            click.echo(
+                "We will now open a browser for each account set in the config file."
+            )
+            click.echo(
+                "You'll need to authenticate and then copy the code provided in the web "
+                "page back into this terminal, upon prompt."
+            )
+            click.pause()
         click.launch(url)
     else:
         click.echo("Go to {}, authenticate and enter the code below.".format(url))

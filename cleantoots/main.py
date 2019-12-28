@@ -4,8 +4,7 @@ import pathlib
 
 import click
 
-from cleantoots import config as config_commands
-from cleantoots import clean as clean_commands
+from cleantoots.commands import clean as clean_commands, config as config_commands
 
 HOME = pathlib.Path.home()
 DEFAULT_CONFIG_DIR = click.get_app_dir("cleantoots")

@@ -13,8 +13,7 @@ from cleantoots.utils import (
 
 
 @click.group("config")
-@click.pass_obj
-def config_command(config):
+def config_command():
     """Manage cleantoot's config."""
     pass
 
@@ -88,6 +87,7 @@ def login(config, only_missing):
     """Fetch credentials for each app described in config file."""
     if not _config_has_sections(config):
         return
+    prompt = True
     for section in config.sections():
         section = config[section]
         app_file_exists = config.isfile(section.get("app_secret_file"))
@@ -102,8 +102,32 @@ def login(config, only_missing):
 
         mastodon = Mastodon(client_id=config.file(section.get("app_secret_file")))
         if not (only_missing and user_file_exists and app_file_exists):
-            _open_url(mastodon.auth_request_url())
+            _open_url(mastodon.auth_request_url(), echo=prompt)
+            prompt = False
             code = click.prompt("Enter code for {}".format(section.get("api_base_url")))
             mastodon.log_in(
                 code=code, to_file=config.file(section.get("user_secret_file"))
             )
+
+
+@config_command.command()
+@click.confirmation_option(
+    prompt="Are you sure you want to delete all credential files? "
+    "You will need to run `cleantoots config login` to re-authenticate."
+)
+@click.pass_obj
+def clear_credentials(config):
+    """Delete all credential files described in config file."""
+    if not _config_has_sections(config):
+        return
+    for section_name in config.sections():
+        section = config[section_name]
+        try:
+            os.remove(config.file(section.get("app_secret_file")))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(config.file(section.get("user_secret_file")))
+        except FileNotFoundError:
+            pass
+        click.secho("Removed files for {}".format(section_name), fg="green")
