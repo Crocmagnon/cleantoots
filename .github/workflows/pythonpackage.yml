@@ -2,9 +2,11 @@ name: Test & publish
 
 on:
   push:
+    branches:
+      - master
   pull_request:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
   build:
