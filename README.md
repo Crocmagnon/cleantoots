@@ -3,15 +3,28 @@
 
 Cleantoots helps you delete your old toots. Because not everything we say on social medias should stay there for eternity.
 
-## Initial config
-
+## Config
+### Initial setup
 Only once
 
 ```bash
 python -m pip install cleantoots
-cleantoots setup-config  # See the following section for config options
-cleantoots login
+cleantoots config setup  # See the following section for config file options
+cleantoots config login
 ```
+
+### View and edit
+You can later view the parsed config file with
+```bash
+cleantoots config list
+```
+
+You can edit the config file using 
+```bash
+cleantoots config edit
+```
+
+This will open the config file using your preferred editor (`EDITOR` env variable).
 
 ## Config options
 
@@ -66,6 +79,14 @@ See `cleantoots config` for the current config.
 ```bash
 cleantoots clean  # Defaults to a dry run. Does NOT delete.
 cleantoots clean --delete  # Delete without prompt.
+```
+
+## Add an account
+```bash
+cleantoots config edit  # Opens editor so you can add your config
+cleantoots config list  # Check your newly added account
+cleantoots config login --only-missing  # Store credentials for your newly created account
+cleantoots clean --delete
 ```
 
 ## Tested environments

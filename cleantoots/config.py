@@ -77,19 +77,33 @@ def edit(config):
 
 
 @config_command.command()
+@click.option(
+    "-m",
+    "--only-missing",
+    help="Prompt for login only on accounts that miss a credentials file.",
+    is_flag=True,
+)
 @click.pass_obj
-def login(config):
+def login(config, only_missing):
     """Fetch credentials for each app described in config file."""
     if not _config_has_sections(config):
         return
     for section in config.sections():
         section = config[section]
-        Mastodon.create_app(
-            "cleantoots",
-            api_base_url=section.get("api_base_url"),
-            to_file=config.file(section.get("app_secret_file")),
-        )
+        app_file_exists = config.isfile(section.get("app_secret_file"))
+        user_file_exists = config.isfile(section.get("user_secret_file"))
+
+        if not (only_missing and app_file_exists):
+            Mastodon.create_app(
+                "cleantoots",
+                api_base_url=section.get("api_base_url"),
+                to_file=config.file(section.get("app_secret_file")),
+            )
+
         mastodon = Mastodon(client_id=config.file(section.get("app_secret_file")))
-        _open_url(mastodon.auth_request_url())
-        code = click.prompt("Enter code for {}".format(section.get("api_base_url")))
-        mastodon.log_in(code=code, to_file=config.file(section.get("user_secret_file")))
+        if not (only_missing and user_file_exists and app_file_exists):
+            _open_url(mastodon.auth_request_url())
+            code = click.prompt("Enter code for {}".format(section.get("api_base_url")))
+            mastodon.log_in(
+                code=code, to_file=config.file(section.get("user_secret_file"))
+            )

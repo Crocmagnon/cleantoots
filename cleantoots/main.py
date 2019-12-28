@@ -25,6 +25,9 @@ class CleanTootsConfig(configparser.ConfigParser):
     def file(self, filename):
         return os.path.join(self.dir, filename)
 
+    def isfile(self, filename):
+        return os.path.isfile(self.file(filename))
+
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option(
