@@ -13,7 +13,7 @@ class SetupConfigTestCase(unittest.TestCase):
     def test_setup_config(self):
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(cli, ["-d", ".", "config", "setup"])
-            self.assertEqual(result.exit_code, 0)
+            self.assertEqual(0, result.exit_code)
             self.assertIn("config.ini written", result.output)
             self.assertTrue(os.path.isfile(os.path.join(".", "config.ini")))
 
@@ -22,7 +22,7 @@ class SetupConfigTestCase(unittest.TestCase):
             self.runner.invoke(cli, ["-d", ".", "config", "setup"])
             self.assertTrue(os.path.isfile(os.path.join(".", "config.ini")))
             result = self.runner.invoke(cli, ["-d", ".", "config", "setup"])
-            self.assertEqual(result.exit_code, 0)
+            self.assertEqual(0, result.exit_code)
             self.assertIn("Not touching anything", result.output)
             self.assertIn("cleantoots config edit", result.output)
 
@@ -63,6 +63,10 @@ class SetupConfigTestCase(unittest.TestCase):
                 cli, ["-d", ".", "config", "login"], input="\nFAKECODE"
             )
             self.assertIn("Enter code for", result.output)
+
+    def test_clean_exists(self):
+        result = self.runner.invoke(cli, ["-d", ".", "clean"])
+        self.assertEqual(0, result.exit_code)
 
 
 if __name__ == "__main__":

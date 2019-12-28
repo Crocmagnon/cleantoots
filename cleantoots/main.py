@@ -3,10 +3,9 @@ import os
 import pathlib
 
 import click
-import pendulum
-from mastodon import Mastodon
 
 from cleantoots import config as config_commands
+from cleantoots import clean as clean_commands
 
 HOME = pathlib.Path.home()
 DEFAULT_CONFIG_DIR = click.get_app_dir("cleantoots")
@@ -58,65 +57,8 @@ def cli(ctx, config_dir, config_file):
     ctx.obj = CleanTootsConfig(config_dir, config_file)
 
 
-cli.add_command(config_commands.config)
-
-
-@cli.command()
-@click.option(
-    "--delete",
-    help="Delete toots that match the rules without confirmation. This is a destructive operation. "
-    "Without this flags, toots will only be listed.",
-    is_flag=True,
-)
-@click.pass_obj
-def clean(delete, config):
-    """
-    Delete Toots based on rules in config file.
-
-    Without the `--delete` flag, toots will only be displayed.
-    """
-    for section in config.sections():
-        section = config[section]
-        user_secret_file = config.file(section.get("user_secret_file"))
-        mastodon = Mastodon(access_token=user_secret_file)
-        user = mastodon.me()
-        page = mastodon.account_statuses(user["id"])
-        would_delete = []
-        while page:
-            for toot in page:
-                if (
-                    toot["reblogs_count"] >= section.getint("boost_limit")
-                    or toot["favourites_count"] >= section.getint("favorite_limit")
-                    or toot["id"]
-                    in map(int, section.get("protected_toots", "").split())
-                    or toot["created_at"]
-                    >= pendulum.now(tz=section.get("timezone")).subtract(
-                        days=section.getint("days_count")
-                    )
-                ):
-                    continue
-                would_delete.append(toot)
-
-            page = mastodon.fetch_next(page)
-
-        if not delete:
-            if not would_delete:
-                click.secho("No toot would be deleted given the rules.", fg="blue")
-                return
-            click.secho(
-                "Would delete {count} toots:".format(count=len(would_delete)), fg="blue"
-            )
-            for toot in would_delete:
-                click.echo(toot["id"])
-                click.echo(toot["content"])
-                click.echo()
-        else:
-            click.echo("Deleting toots...")
-            with click.progressbar(would_delete) as bar:
-                for toot in bar:
-                    mastodon.status_delete(toot)
-                    click.secho("Deleted toot {}".format(toot["id"]), fg="green")
-
+cli.add_command(config_commands.config_command)
+cli.add_command(clean_commands.clean)
 
 if __name__ == "__main__":
     cli()
