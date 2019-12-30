@@ -9,6 +9,7 @@ from cleantoots.utils import (
     _open_url,
     _get_default_config,
     _is_tty,
+    CleanTootsConfig,
 )
 
 
@@ -20,7 +21,7 @@ def config_command():
 
 @config_command.command()
 @click.pass_obj
-def setup(config):
+def setup(config: CleanTootsConfig):
     """Initial setup for configuration directories and files."""
     os.makedirs(config.dir, exist_ok=True)
     if os.path.isfile(config.main_file):
@@ -51,7 +52,7 @@ def setup(config):
 
 @config_command.command(name="list")
 @click.pass_obj
-def list_(config):
+def list_(config: CleanTootsConfig):
     """Display parsed config."""
     if not _config_has_sections(config):
         return
@@ -65,10 +66,10 @@ def list_(config):
 
 @config_command.command()
 @click.pass_obj
-def edit(config):
+def edit(config: CleanTootsConfig):
     """Edit config file."""
     if not _config_has_sections(config):
-        return
+        click.pause()
     if sys.stdout.isatty() and sys.stdin.isatty():
         click.edit(filename=config.main_file)
     else:
@@ -83,7 +84,7 @@ def edit(config):
     is_flag=True,
 )
 @click.pass_obj
-def login(config, only_missing):
+def login(config: CleanTootsConfig, only_missing: bool):
     """Fetch credentials for each app described in config file."""
     if not _config_has_sections(config):
         return
@@ -116,7 +117,7 @@ def login(config, only_missing):
     "You will need to run `cleantoots config login` to re-authenticate."
 )
 @click.pass_obj
-def clear_credentials(config):
+def clear_credentials(config: CleanTootsConfig):
     """Delete all credential files described in config file."""
     if not _config_has_sections(config):
         return

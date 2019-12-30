@@ -5,7 +5,7 @@ import html2text
 import pendulum
 from mastodon import Mastodon
 
-from cleantoots.utils import _config_has_sections
+from cleantoots.utils import _config_has_sections, CleanTootsConfig
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ CONTENT_PREVIEW = 78
     "--headless", help="Use to make output more logging friendly.", is_flag=True
 )
 @click.pass_obj
-def clean(config, delete, headless):
+def clean(config: CleanTootsConfig, delete: bool, headless: bool):
     """
     Delete Toots based on rules in config file.
 

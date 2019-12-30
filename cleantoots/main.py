@@ -1,33 +1,16 @@
-import configparser
 import logging.config
 import os
-import pathlib
 import sys
 
 import click
 
 from cleantoots.commands import clean as clean_commands, config as config_commands
+from cleantoots.utils import CleanTootsConfig
 
-HOME = pathlib.Path.home()
 DEFAULT_CONFIG_DIR = click.get_app_dir("cleantoots")
 DEFAULT_CONFIG_FILENAME = "config.ini"
-EDITOR = os.getenv("EDITOR", "vim")
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
-
-
-class CleanTootsConfig(configparser.ConfigParser):
-    def __init__(self, config_dir, config_file_name, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.dir = config_dir
-        self.main_file = os.path.join(config_dir, config_file_name)
-        self.read(self.main_file)
-
-    def file(self, filename):
-        return os.path.join(self.dir, filename)
-
-    def isfile(self, filename):
-        return os.path.isfile(self.file(filename))
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)

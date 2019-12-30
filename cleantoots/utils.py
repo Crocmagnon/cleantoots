@@ -1,4 +1,5 @@
 import configparser
+import os
 import sys
 
 import click
@@ -48,3 +49,17 @@ def _get_default_config():
         "protected_toots": "1234\n5678",
     }
     return default_config
+
+
+class CleanTootsConfig(configparser.ConfigParser):
+    def __init__(self, config_dir, config_file_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dir = config_dir
+        self.main_file = os.path.join(config_dir, config_file_name)
+        self.read(self.main_file)
+
+    def file(self, filename):
+        return os.path.join(self.dir, filename)
+
+    def isfile(self, filename):
+        return os.path.isfile(self.file(filename))
