@@ -77,6 +77,13 @@ def edit(config: CleanTootsConfig):
 
 
 @config_command.command()
+@click.pass_obj
+def path(config: CleanTootsConfig):
+    """Print config path and exit."""
+    click.echo(config.dir)
+
+
+@config_command.command()
 @click.option(
     "-m",
     "--only-missing",
