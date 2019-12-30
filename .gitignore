@@ -227,3 +227,6 @@ dmypy.json
 
 *.secret
 .idea
+
+*.log
+*.log.*
