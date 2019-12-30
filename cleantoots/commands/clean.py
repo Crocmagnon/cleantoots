@@ -1,8 +1,11 @@
 import click
+import html2text
 import pendulum
 from mastodon import Mastodon
 
 from cleantoots.utils import _config_has_sections
+
+CONTENT_PREVIEW = 78
 
 
 @click.command()
@@ -21,6 +24,12 @@ def clean(config, delete):
     """
     if not _config_has_sections(config):
         return
+    h = html2text.HTML2Text()
+    h.ignore_links = True
+    h.ignore_emphasis = True
+    h.ignore_images = True
+    h.ignore_tables = True
+
     for section in config.sections():
         section = config[section]
         user_secret_file = config.file(section.get("user_secret_file"))
@@ -30,15 +39,23 @@ def clean(config, delete):
         would_delete = []
         while page:
             for toot in page:
+                boost_count = toot["reblogs_count"]
+                favorite_count = toot["favourites_count"]
+                id_ = toot["id"]
+                original_id = None
+                if toot.get("reblog"):
+                    original_id = toot["reblog"].get("id")
+                created_at = toot["created_at"]
+                protected_toots = map(int, section.get("protected_toots", "").split())
+                time_limit = pendulum.now(tz=section.get("timezone")).subtract(
+                    days=section.getint("days_count")
+                )
                 if (
-                    toot["reblogs_count"] >= section.getint("boost_limit")
-                    or toot["favourites_count"] >= section.getint("favorite_limit")
-                    or toot["id"]
-                    in map(int, section.get("protected_toots", "").split())
-                    or toot["created_at"]
-                    >= pendulum.now(tz=section.get("timezone")).subtract(
-                        days=section.getint("days_count")
-                    )
+                    boost_count >= section.getint("boost_limit")
+                    or favorite_count >= section.getint("favorite_limit")
+                    or id_ in protected_toots
+                    or original_id in protected_toots
+                    or created_at >= time_limit
                 ):
                     continue
                 would_delete.append(toot)
@@ -50,15 +67,30 @@ def clean(config, delete):
                 click.secho("No toot would be deleted given the rules.", fg="blue")
                 return
             click.secho(
-                "Would delete {count} toots:".format(count=len(would_delete)), fg="blue"
+                "Would delete {count} toots/boost:".format(count=len(would_delete)),
+                fg="blue",
             )
             for toot in would_delete:
-                click.echo(toot["id"])
-                click.echo(toot["content"])
+                message = format_toot(toot, prefix="=== ", separator=" ", suffix=" ===")
+                click.echo(message)
+                content = h.handle(toot["content"]).replace("\n", " ").strip()
+                if len(content) > CONTENT_PREVIEW:
+                    content = content[: CONTENT_PREVIEW - 3] + "..."
+                else:
+                    content = content[:CONTENT_PREVIEW]
+                click.echo(content)
                 click.echo()
         else:
             click.echo("Deleting toots...")
             with click.progressbar(would_delete) as bar:
                 for toot in bar:
                     mastodon.status_delete(toot)
-                    click.secho("Deleted toot {}".format(toot["id"]), fg="green")
+                    click.secho("Deleted {}".format(format_toot(toot)), fg="green")
+
+
+def format_toot(toot, prefix="", separator="\t", suffix=""):
+    if toot.get("reblog"):
+        message = f"{prefix}boost of{separator}{toot['reblog']['url']}{suffix}"
+    else:
+        message = f"{prefix}original toot{separator}{toot['url']}{suffix}"
+    return message
