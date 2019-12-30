@@ -1,9 +1,13 @@
+import logging.handlers
+
 import click
 import html2text
 import pendulum
 from mastodon import Mastodon
 
 from cleantoots.utils import _config_has_sections
+
+logger = logging.getLogger(__name__)
 
 CONTENT_PREVIEW = 78
 
@@ -15,8 +19,11 @@ CONTENT_PREVIEW = 78
     "Without this flags, toots will only be listed.",
     is_flag=True,
 )
+@click.option(
+    "--headless", help="Use to make output more logging friendly.", is_flag=True
+)
 @click.pass_obj
-def clean(config, delete):
+def clean(config, delete, headless):
     """
     Delete Toots based on rules in config file.
 
@@ -64,33 +71,42 @@ def clean(config, delete):
 
         if not delete:
             if not would_delete:
-                click.secho("No toot would be deleted given the rules.", fg="blue")
+                log("No toot would be deleted given the rules.", headless, fg="blue")
                 return
-            click.secho(
+            log(
                 "Would delete {count} toots/boost:".format(count=len(would_delete)),
+                headless,
                 fg="blue",
             )
             for toot in would_delete:
-                message = format_toot(toot, prefix="=== ", separator=" ", suffix=" ===")
-                click.echo(message)
+                message = format_toot(toot)
+                log(message, headless, bold=True)
                 content = h.handle(toot["content"]).replace("\n", " ").strip()
                 if len(content) > CONTENT_PREVIEW:
                     content = content[: CONTENT_PREVIEW - 3] + "..."
                 else:
                     content = content[:CONTENT_PREVIEW]
-                click.echo(content)
-                click.echo()
+                log(content, headless)
+                log("", headless)
         else:
-            click.echo("Deleting toots...")
+            log("Deleting toots...", headless)
             with click.progressbar(would_delete) as bar:
                 for toot in bar:
                     mastodon.status_delete(toot)
-                    click.secho("Deleted {}".format(format_toot(toot)), fg="green")
+                    log("Deleted {}".format(format_toot(toot)), headless, fg="green")
 
 
-def format_toot(toot, prefix="", separator="\t", suffix=""):
+def format_toot(toot):
     if toot.get("reblog"):
-        message = f"{prefix}boost of{separator}{toot['reblog']['url']}{suffix}"
+        message = f"boost of toot {toot['reblog']['url']}"
     else:
-        message = f"{prefix}original toot{separator}{toot['url']}{suffix}"
+        message = f"original toot {toot['url']}"
     return message
+
+
+def log(message, headless, level=logging.INFO, *args, **kwargs):
+    if headless:
+        if message and message.strip():
+            logger.log(level, message)
+    else:
+        click.secho(message, *args, **kwargs)

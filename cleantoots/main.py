@@ -1,6 +1,8 @@
 import configparser
+import logging.config
 import os
 import pathlib
+import sys
 
 import click
 
@@ -57,6 +59,37 @@ def cli(ctx, config_dir, config_file):
     3. run `clean --delete`
     """
     ctx.obj = CleanTootsConfig(config_dir, config_file)
+    log_file = os.path.join(click.get_app_dir("cleantoots"), "cleantoots.log")
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "formatters": {
+                "precise": {
+                    "format": "{asctime} | {name} | {levelname} | {message}",
+                    "style": "{",
+                }
+            },
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "stream": sys.stdout,
+                    "level": "INFO",
+                    "formatter": "precise",
+                },
+                "file": {
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": log_file,
+                    "maxBytes": 1024 * 100,
+                    "backupCount": 3,
+                    "level": "INFO",
+                    "formatter": "precise",
+                },
+            },
+            "loggers": {
+                "cleantoots": {"level": "INFO", "handlers": ["console", "file"]}
+            },
+        }
+    )
 
 
 cli.add_command(config_commands.config_command)
