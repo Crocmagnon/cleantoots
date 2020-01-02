@@ -37,7 +37,7 @@ def cli(ctx, config_dir, config_file):
 
     \b
     Steps, in order:
-    1. run `setup-config`
+    1. run `config setup`
     2. run `login`
     3. run `clean --delete`
     """
