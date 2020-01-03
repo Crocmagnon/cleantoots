@@ -29,7 +29,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     default=DEFAULT_CONFIG_FILENAME,
     show_default=True,
 )
-@click.version_option()
+@click.version_option(version=__import__("cleantoots").__version__)
 @click.pass_context
 def cli(ctx, config_dir, config_file):
     """
