@@ -23,7 +23,6 @@ def config_command():
 @click.pass_obj
 def setup(config: CleanTootsConfig):
     """Initial setup for configuration directories and files."""
-    os.makedirs(config.dir, exist_ok=True)
     if os.path.isfile(config.main_file):
         click.secho(
             "{} found. Not touching anything.".format(config.main_file), fg="yellow"

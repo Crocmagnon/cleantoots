@@ -42,7 +42,7 @@ def cli(ctx, config_dir, config_file):
     3. run `clean --delete`
     """
     ctx.obj = CleanTootsConfig(config_dir, config_file)
-    log_file = os.path.join(click.get_app_dir("cleantoots"), "cleantoots.log")
+    log_file = os.path.join(config_dir, "cleantoots.log")
     logging.config.dictConfig(
         {
             "version": 1,

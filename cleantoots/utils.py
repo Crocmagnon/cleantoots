@@ -55,6 +55,7 @@ class CleanTootsConfig(configparser.ConfigParser):
     def __init__(self, config_dir, config_file_name, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dir = config_dir
+        os.makedirs(self.dir, exist_ok=True)
         self.main_file = os.path.join(config_dir, config_file_name)
         self.read(self.main_file)
 
