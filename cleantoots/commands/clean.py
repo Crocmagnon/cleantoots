@@ -166,11 +166,11 @@ def _toot_protection_reason(toot: dict, section) -> Optional[str]:
         )
     if id_ in protected_toots or original_id in protected_toots:
         return "{} or {} is a protected id".format(id_, original_id)
-    if created_at >= time_limit:
-        return "creation time {} is later than limit {}".format(created_at, time_limit)
     for tag in toot.get("tags", []):
         tag_name = tag.get("name").lower()
         if tag_name and tag_name in protected_tags:
             return "{} is a protected tag".format(tag_name)
+    if created_at >= time_limit:
+        return "creation time {} is later than limit {}".format(created_at, time_limit)
 
     return None
