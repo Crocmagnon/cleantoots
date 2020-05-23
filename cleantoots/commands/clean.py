@@ -124,7 +124,7 @@ def _format_toot(toot: dict, protection_reason: str = ""):
     else:
         message = f"original toot {toot['url']}"
     if protection_reason:
-        message = f"{message} protected because of {protection_reason}"
+        message = f"{message} protected because {protection_reason}"
     return message
 
 
@@ -152,16 +152,25 @@ def _toot_protection_reason(toot: dict, section) -> Optional[str]:
         original_id = toot["reblog"].get("id")
     created_at = toot["created_at"]
     protected_toots = map(int, section.get("protected_toots", "").split())
+    protected_tags = section.get("protected_tags", "").lower().split()
     time_limit = pendulum.now(tz=section.get("timezone")).subtract(
         days=section.getint("days_count")
     )
-    if boost_count >= section.getint("boost_limit"):
-        return "boost count"
-    if favorite_count >= section.getint("favorite_limit"):
-        return "favorite count"
+    boost_limit = section.getint("boost_limit")
+    if boost_count >= boost_limit:
+        return "boost count is over limit {} >= {}".format(boost_count, boost_limit)
+    favorite_limit = section.getint("favorite_limit")
+    if favorite_count >= favorite_limit:
+        return "favorite count is over limit {} >= {}".format(
+            favorite_count, favorite_limit
+        )
     if id_ in protected_toots or original_id in protected_toots:
-        return "protected id"
+        return "{} or {} is a protected id".format(id_, original_id)
     if created_at >= time_limit:
-        return "creation time"
+        return "creation time {} is later than limit {}".format(created_at, time_limit)
+    for tag in toot.get("tags", []):
+        tag_name = tag.get("name").lower()
+        if tag_name and tag_name in protected_tags:
+            return "{} is a protected tag".format(tag_name)
 
     return None

@@ -47,6 +47,7 @@ def _get_default_config():
         "app_secret_file": "mastodon_social_app.secret",
         "user_secret_file": "mastodon_social_user.secret",
         "protected_toots": "1234\n5678",
+        "protected_tags": "TagToProtect",
     }
     return default_config
 

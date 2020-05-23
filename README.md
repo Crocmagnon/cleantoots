@@ -60,6 +60,14 @@ protected_toots = 103362008817616000
     103361883565013391
     103363106195441418
 
+# Tags you want to protect (never delete).
+# Tags are matched case insensitively and are only matched for original toots (not for boosts):
+# if you boost a toot containing #ScreenshotSunday it won't be protected by this rule.
+# You MUST omit the `#` part of the tag.
+protected_tags = 100DaysToOffload
+    screenshotsunday
+
+
 # Another account
 [Mastodon.social]
 api_base_url = https://mastodon.social
