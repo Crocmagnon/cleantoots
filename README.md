@@ -1,6 +1,8 @@
 # Cleantoots
 Cleantoots helps you delete your old toots. Because not everything we say on social medias should stay there for eternity.
 
+Here's a link to [my blog post introducing cleantoots](https://gabnotes.org/cleantoots-clean-your-toot-history/).
+
 ## Install
 ### Using pip
 ```bash
