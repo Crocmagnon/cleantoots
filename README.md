@@ -1,7 +1,12 @@
 # Cleantoots
+
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FCrocmagnon%2Fcleantoots%2Fbadge&style=flat)](https://actions-badge.atrox.dev/Crocmagnon/cleantoots/goto)
+
 Cleantoots helps you delete your old toots. Because not everything we say on social medias should stay there for eternity.
 
 Here's a link to [my blog post introducing cleantoots](https://gabnotes.org/cleantoots-clean-your-toot-history/).
+
+The authoritative source for this repo can be found here: https://git.augendre.info/gaugendre/cleantoots
 
 ## Install
 ### Using pip
@@ -116,6 +121,13 @@ cleantoots config edit
 # Then login again for remaining accounts.
 cleantoots config login
 ```
+
+## Tested environments
+Cleantoots test suite runs on Python 3.6, 3.7 and 3.8
+on latest versions of macOS, Windows and Ubuntu as GitHub Actions understands it.
+
+See [the docs](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idruns-on)
+for more information on what "latest" means.
 
 ## Inspiration
 The idea behind cleantoots is highly inspired by [magnusnissel/cleantweets](https://github.com/magnusnissel/cleantweets).
