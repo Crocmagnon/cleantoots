@@ -38,7 +38,7 @@ def cli(ctx, config_dir, config_file):
     \b
     Steps, in order:
     1. run `config setup`
-    2. run `login`
+    2. run `config login`
     3. run `clean --delete`
     """
     ctx.obj = CleanTootsConfig(config_dir, config_file)
