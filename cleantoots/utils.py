@@ -1,6 +1,7 @@
 import configparser
 import os
 import sys
+import webbrowser
 
 import click
 
@@ -19,18 +20,22 @@ def _config_has_sections(config):
 
 
 def _open_url(url, echo):
+    opened = False
+    
     if _is_tty():
         if echo:
             click.echo(
-                "We will now open a browser for each account set in the config file."
+                "We will now try to open a browser for each account set in the config file."
             )
             click.echo(
                 "You'll need to authenticate and then copy the code provided in the web "
                 "page back into this terminal, upon prompt."
             )
             click.pause()
-        click.launch(url)
-    else:
+        result = webbrowser.open(url)
+        opened = result
+    
+    if not opened:
         click.echo("Go to {}, authenticate and enter the code below.".format(url))
 
 
