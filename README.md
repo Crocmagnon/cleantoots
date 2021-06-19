@@ -123,7 +123,7 @@ cleantoots config login
 ```
 
 ## Tested environments
-Cleantoots test suite runs on Python 3.6, 3.7 and 3.8
+Cleantoots test suite runs on Python 3.7, 3.8 and 3.9
 on latest versions of macOS, Windows and Ubuntu as GitHub Actions understands it.
 
 See [the docs](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idruns-on)
