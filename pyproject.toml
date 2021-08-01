@@ -5,7 +5,8 @@ description = "Cleanup your toot history."
 license = "GPL-3.0-or-later"
 authors = ["Gabriel Augendre <gabriel@augendre.info>"]
 readme = "README.md"
-homepage = "https://github.com/Crocmagnon/cleantoots/tree/master"
+homepage = "https://git.augendre.info/gaugendre/cleantoots"
+repository = "https://git.augendre.info/gaugendre/cleantoots"
 keywords = ["mastodon", "toot"]
 classifiers = [
     "Development Status :: 3 - Alpha",
