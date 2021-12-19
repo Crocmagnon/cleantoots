@@ -33,7 +33,7 @@ tox = "^3.24.4"
 cleantoots = 'cleantoots.main:cli'
 
 [tool.black]
-target-version = ['py310']
+target-version = ['py38']
 
 [tool.isort]
 profile = "black"
