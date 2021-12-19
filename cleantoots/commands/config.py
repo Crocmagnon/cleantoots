@@ -5,11 +5,11 @@ import click
 from mastodon import Mastodon
 
 from cleantoots.utils import (
+    CleanTootsConfig,
     _config_has_sections,
-    _open_url,
     _get_default_config,
     _is_tty,
-    CleanTootsConfig,
+    _open_url,
 )
 
 
@@ -24,17 +24,15 @@ def config_command():
 def setup(config: CleanTootsConfig):
     """Initial setup for configuration directories and files."""
     if os.path.isfile(config.main_file):
-        click.secho(
-            "{} found. Not touching anything.".format(config.main_file), fg="yellow"
-        )
+        click.secho(f"{config.main_file} found. Not touching anything.", fg="yellow")
         command = click.style("cleantoots config edit", bold=True)
-        click.echo("You may want to edit the file. Use: {}.".format(command))
+        click.echo(f"You may want to edit the file. Use: {command}.")
         return
 
     default_config = _get_default_config()
     with open(config.main_file, "w") as _file:
         default_config.write(_file)
-        click.secho("{} written.".format(config.main_file), fg="green")
+        click.secho(f"{config.main_file} written.", fg="green")
     click.echo()
     click.secho("Next steps", bold=True)
     click.echo(
@@ -59,7 +57,7 @@ def list_(config: CleanTootsConfig):
         click.secho(section_name, bold=True)
         section = config[section_name]
         for key, value in section.items():
-            click.secho("{} = {}".format(key, value))
+            click.secho(f"{key} = {value}")
         click.echo()
 
 
@@ -137,4 +135,4 @@ def clear_credentials(config: CleanTootsConfig):
             os.remove(config.file(section.get("user_secret_file")))
         except FileNotFoundError:
             pass
-        click.secho("Removed files for {}".format(section_name), fg="green")
+        click.secho(f"Removed files for {section_name}", fg="green")

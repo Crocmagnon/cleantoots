@@ -1,12 +1,12 @@
 import logging.handlers
-from typing import Optional, List
+from typing import List, Optional
 
 import click
 import html2text
 import pendulum
 from mastodon import Mastodon
 
-from cleantoots.utils import _config_has_sections, CleanTootsConfig
+from cleantoots.utils import CleanTootsConfig, _config_has_sections
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ def _delete_or_log(delete, html_handler, headless, mastodon, protected, would_de
         with click.progressbar(would_delete) as bar:
             for toot in bar:
                 mastodon.status_delete(toot)
-                log("Deleted {}".format(_format_toot(toot)), headless, fg="green")
+                log(f"Deleted {_format_toot(toot)}", headless, fg="green")
 
 
 def _log_item_list(
@@ -94,7 +94,9 @@ def _log_item_list(
         log(no_item_message, headless, fg="blue")
     else:
         log(
-            count_message_format.format(count=len(items)), headless, fg="blue",
+            count_message_format.format(count=len(items)),
+            headless,
+            fg="blue",
         )
         for toot in items:
             _log_item(toot, headless, html_handler)
@@ -158,19 +160,19 @@ def _toot_protection_reason(toot: dict, section) -> Optional[str]:
     )
     boost_limit = section.getint("boost_limit")
     if boost_count >= boost_limit:
-        return "boost count is over limit {} >= {}".format(boost_count, boost_limit)
+        return f"boost count is over limit {boost_count} >= {boost_limit}"
     favorite_limit = section.getint("favorite_limit")
     if favorite_count >= favorite_limit:
         return "favorite count is over limit {} >= {}".format(
             favorite_count, favorite_limit
         )
     if id_ in protected_toots or original_id in protected_toots:
-        return "{} or {} is a protected id".format(id_, original_id)
+        return f"{id_} or {original_id} is a protected id"
     for tag in toot.get("tags", []):
         tag_name = tag.get("name").lower()
         if tag_name and tag_name in protected_tags:
-            return "{} is a protected tag".format(tag_name)
+            return f"{tag_name} is a protected tag"
     if created_at >= time_limit:
-        return "creation time {} is later than limit {}".format(created_at, time_limit)
+        return f"creation time {created_at} is later than limit {time_limit}"
 
     return None
