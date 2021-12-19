@@ -17,7 +17,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6.2"
+python = ">=3.8,<4"
 "Mastodon.py" = ">=1.5.0"
 click = ">=7.0"
 pendulum = ">=2.0.5"
@@ -25,11 +25,32 @@ html2text = ">=2019.9.26"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
-black = "^21.6b0"
+invoke = "^1.6.0"
+pre-commit = "^2.16.0"
+tox = "^3.24.4"
 
 [tool.poetry.scripts]
 cleantoots = 'cleantoots.main:cli'
 
+[tool.black]
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+envlist = py38, py39, py310
+
+[testenv]
+whitelist_externals = poetry
+commands =
+    poetry install --remove-untracked
+    poetry run inv test
+"""
+
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -33,7 +33,7 @@ You can later view the parsed config file with
 cleantoots config list
 ```
 
-You can edit the config file using 
+You can edit the config file using
 ```bash
 cleantoots config edit
 ```
@@ -136,4 +136,3 @@ for more information on what "latest" means.
 
 ## Inspiration
 The idea behind cleantoots is highly inspired by [magnusnissel/cleantweets](https://github.com/magnusnissel/cleantweets).
-

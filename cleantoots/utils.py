@@ -14,14 +14,14 @@ def _config_has_sections(config):
     if not config.sections():
         click.secho("The config file doesn't seem to have any section.", fg="yellow")
         command = click.style("cleantoots config setup", bold=True)
-        click.secho("You should set it up first. Use: {}".format(command))
+        click.secho(f"You should set it up first. Use: {command}")
         return False
     return True
 
 
 def _open_url(url, echo):
     opened = False
-    
+
     if _is_tty():
         if echo:
             click.echo(
@@ -34,9 +34,9 @@ def _open_url(url, echo):
             click.pause()
         result = webbrowser.open(url)
         opened = result
-    
+
     if not opened:
-        click.echo("Go to {}, authenticate and enter the code below.".format(url))
+        click.echo(f"Go to {url}, authenticate and enter the code below.")
 
 
 def _get_default_config():
