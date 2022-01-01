@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "cleantoots"
-version = "0.6.0"
+version = "0.7.0"
 description = "Cleanup your toot history."
-license = "GPL-3.0-or-later"
 authors = ["Gabriel Augendre <gabriel@augendre.info>"]
 readme = "README.md"
 homepage = "https://git.augendre.info/gaugendre/cleantoots"
 repository = "https://git.augendre.info/gaugendre/cleantoots"
 keywords = ["mastodon", "toot"]
 classifiers = [
+    "License :: OSI Approved :: The Unlicense (Unlicense)",
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
