@@ -1,4 +1,6 @@
-# Cleantoots
+# Cleantoots - ARCHIVED
+
+This repository is now archived as the feature has been built into Mastodon itself.
 
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FCrocmagnon%2Fcleantoots%2Fbadge&style=flat)](https://actions-badge.atrox.dev/Crocmagnon/cleantoots/goto)
 
